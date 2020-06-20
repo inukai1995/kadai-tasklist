@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
@@ -17,8 +18,8 @@ import utils.DBUtil;
  */
 @WebServlet("/new")
 public class NewServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -27,15 +28,35 @@ public class NewServlet extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		EntityManager em = DBUtil.createEntityManager();
-		em.getTransaction().bigin();
-		
-		// taskのインスタンス生成
-		Task m = new Task();
-	}
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        EntityManager em = DBUtil.createEntityManager();
+        em.getTransaction().begin();
+
+        // taskのインスタンス生成
+        Task m = new Task();
+
+        //mの各プロパティにデータを代入
+        String title = "７月２３日";
+        m.setTitle(title);
+
+        String content = "海の日";
+        m.setContent(content);
+
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        m.setCreated_at(currentTime);
+        m.setUpdated_at(currentTime);
+
+        //データベースに保存
+        em.persist(m);
+        em.getTransaction().commit();
+
+        //自動採番されたIDの値を表示
+        response.getWriter().append(Integer.valueOf(m.getId()).toString());
+
+        em.close();
+    }
 
 }
